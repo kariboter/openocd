@@ -474,7 +474,7 @@ static int gdb_put_packet_inner(struct connection *connection,
 
 		char local_buffer[1024];
 		local_buffer[0] = '$';
-		if ((size_t)len + 4 <= sizeof(local_buffer)) {
+		if ((size_t)len + 5 <= sizeof(local_buffer)) {
 			/* performance gain on smaller packets by only a single call to gdb_write() */
 			memcpy(local_buffer + 1, buffer, len++);
 			len += snprintf(local_buffer + len, sizeof(local_buffer) - len, "#%02x", my_checksum);
@@ -1041,8 +1041,8 @@ static int gdb_new_connection(struct connection *connection)
 	 * GDB session could leave dangling breakpoints if e.g. communication
 	 * timed out.
 	 */
-	breakpoint_clear_target(target);
-	watchpoint_clear_target(target);
+	breakpoint_remove_all(target);
+	watchpoint_remove_all(target);
 
 	/* Since version 3.95 (gdb-19990504), with the exclusion of 6.5~6.8, GDB
 	 * sends an ACK at connection with the following comment in its source code:
@@ -3219,8 +3219,8 @@ static void gdb_restart_inferior(struct connection *connection, const char *pack
 	struct gdb_connection *gdb_con = connection->priv;
 	struct target *target = get_target_from_connection(connection);
 
-	breakpoint_clear_target(target);
-	watchpoint_clear_target(target);
+	breakpoint_remove_all(target);
+	watchpoint_remove_all(target);
 	command_run_linef(connection->cmd_ctx, "ocd_gdb_restart %s",
 			target_name(target));
 	/* set connection as attached after reset */

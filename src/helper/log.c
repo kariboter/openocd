@@ -113,7 +113,7 @@ static void log_puts(enum log_levels level,
 	if (f)
 		file = f + 1;
 
-	if (debug_level >= LOG_LVL_DEBUG) {
+	if (LOG_LEVEL_IS(LOG_LVL_DEBUG)) {
 		/* print with count and time information */
 		int64_t t = timeval_ms() - start;
 #ifdef _DEBUG_FREE_SPACE_
@@ -353,6 +353,8 @@ char *alloc_vprintf(const char *fmt, va_list ap)
 	va_list ap_copy;
 	int len;
 	char *string;
+
+	assert(fmt);
 
 	/* determine the length of the buffer needed */
 	va_copy(ap_copy, ap);
